@@ -262,6 +262,39 @@ define([
         },
 
         /**
+         * Provides the OAuth2 Assertion flow
+         * @param {string} provider name for the flow ie. "facebook"
+         * @param {string} token to provide for the assertion
+         * @returns {Deferred} the jQuery Deferred object
+         */
+        assert: function(provider, token) {
+          var self = this;
+          if (this.isAuthenticated()) return self.trigger('success', this.state, this);
+          var time = new Date().getTime();
+          return $.ajax({
+            url: self.accessUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              grant_type: 'assertion',
+              client_id: self.clientId,
+              client_secret: self.clientSecret,
+              assertion_type: provider,
+              assertion: token
+            },
+            success: function(response) {
+              response.time = time;
+              response.expires_in = parseInt(response.expires_in) * 1000;
+              self.save(response);
+              self.trigger('access', response, this);
+            },
+            error: function(response) {
+              self.trigger('error', response, this);
+            }
+          });
+        },
+
+        /**
          * Authenticates against an OAuth2 endpoint
          *
          * @param {string} username
