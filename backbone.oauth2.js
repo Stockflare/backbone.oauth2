@@ -301,7 +301,7 @@ define([
          * @param {string} password
          * @returns {void}
          */
-        access: function (username, password) {
+        access: function (username, password, otp) {
             // Store a reference to the object
             var self = this;
 
@@ -324,7 +324,8 @@ define([
                     client_id       : self.clientId,
                     client_secret   : self.clientSecret,
                     username        : username,
-                    password        : password
+                    password        : password,
+                    otp             : otp
                 },
                 dataType: 'json',
 
